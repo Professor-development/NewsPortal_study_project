@@ -1,0 +1,88 @@
+>>> User.objects.create_user('Mark')
+<User: Mark>
+>>> User.objects.create_user('Max')
+<User: Max>
+
+user = User.objects.get(username='Mark')
+>>> Author.objects.create(user = user)
+<Author: Author object (1)>
+>>> user = User.objects.get(username='Max')
+>>> Author.objects.create(user = user)
+<Author: Author object (2)>
+
+>>> Category.objects.create(category='природа')
+<Category: Category object (1)>
+>>> Category.objects.create(category='политика')
+<Category: Category object (2)>
+>>> Category.objects.create(category='программирование')
+<Category: Category object (3)>
+>>> Category.objects.create(category='дизайн')
+<Category: Category object (4)>
+
+>>> Post.objects.create(type_of_post = Post.article, header = 'Альпы', text = "Альпы - самый высокий и протяжённый горный хребет среди систем, целиком лежащих в Европе.", author_id = 1)
+<Post: Post object (1)>
+>>> Post.objects.create(type_of_post = Post.article, header = 'Тибетской нагорье', text = "Тибет - район Центральной Азии, расположен на Тибетском нагорье.", author_id = 1)
+<Post: Post object (2)>
+>>> Post.objects.create(type_of_post = Post.news, header = 'Съедобные дроны помогут спасать людей', text = "Беспилотные летательные аппараты могут иметь решающее значение во время стихийных бедствий, обеспечивая снабжение попавшим в
+ беду людям. Однако, обычно они могут нести лишь около 30 процентов своей массы в качестве полезной нагрузки.", author_id = 2)
+
+>>> PostCategory.objects.create(category_id = 1, post_id = 1)
+<PostCategory: PostCategory object (1)>
+>>> PostCategory.objects.create(category_id = 4, post_id = 1)
+<PostCategory: PostCategory object (2)>
+>>> PostCategory.objects.create(category_id = 1, post_id = 2)
+<PostCategory: PostCategory object (3)>
+>>> PostCategory.objects.create(category_id = 2, post_id = 3)
+<PostCategory: PostCategory object (4)>
+
+>>> Comment.objects.create(text = 'Очень красивые горы, Лайк!', post_id = 1, user_id = 2)
+<Comment: Comment object (1)>
+>>> Comment.objects.create(text = 'Когда нибудь поеду на Тибет :)', post_id = 2, user_id = 2)
+<Comment: Comment object (2)>
+>>> Comment.objects.create(text = 'Интересная новость!', post_id = 3, user_id = 1)
+<Comment: Comment object (3)>
+>>> Comment.objects.create(text = 'Лайк!', post_id = 3, user_id = 1)
+<Comment: Comment object (4)>
+
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=1).dislike()
+>>> Post.objects.get(pk=2).dislike()
+>>> Post.objects.get(pk=2).dislike()
+>>> Post.objects.get(pk=2).dislike()
+>>> Post.objects.get(pk=3).dislike()
+>>> Post.objects.get(pk=3).like()
+>>> Post.objects.get(pk=3).like()
+
+>>> Comment.objects.get(pk=1).like()
+>>> Comment.objects.get(pk=1).like()
+>>> Comment.objects.get(pk=2).like()
+>>> Comment.objects.get(pk=3).dislike()
+>>> Comment.objects.get(pk=3).like()
+>>> Comment.objects.get(pk=3).like()
+>>> Comment.objects.get(pk=4).dislike()
+
+>>> Author.objects.get(pk=1).update_rating(Post.objects.filter(author_id=1).aggregate(Sum('rate'))['rate__sum'], Comment.objects.filter(user_id=1).aggregate(Sum('rate'))['rate__sum'], Comment.objects.filter(user_id=2).aggregate(Sum(
+'rate'))['rate__sum'])
+
+>>> Author.objects.get(pk=2).update_rating(Post.objects.filter(author_id=2).aggregate(Sum('rate'))['rate__sum'], Comment.objects.filter(user_id=2).aggregate(Sum('rate'))['rate__sum'], Comment.objects.filter(user_id=1).aggregate(Sum(
+'rate'))['rate__sum'])
+
+>>> print(User.objects.get(pk = Author.objects.order_by('-rating').values('rating', 'user_id')[0]['user_id']), Author.objects.order_by('-rating').values('rating')[0]['rating'])
+Mark 9
+
+>>> id_best = Post.objects.order_by('-rate').values('id')[0]['id']
+>>> print('Дата публикации: ', Post.objects.get(pk=id_best).time_of_publication, ", Пользователь:", User.objects.get(pk=id_best), ", Рейтинг:", Post.objects.get(pk=id_best).rate, '\n', Post.objects.get(pk=id_best).header, '\n', Post
+.objects.get(pk=id_best).preview())
+Дата публикации:  2022-11-16 21:54:37.954074+00:00 , Пользователь: Mark , Рейтинг: 5
+ Альпы
+ Альпы - самый высокий и протяжённый горный хребет среди систем, целиком лежащих в Европе....
+
+>>> print('Дата комментария: ', Comment.objects.get(post_id=id_best).date_of_public, ", Пользователь:", User.objects.get(pk=Comment.objects.get(post_id=id_best).user_id).username, ", Рейтинг:", Author.objects.get(pk=Comment.objects.
+get(post_id=id_best).user_id).rating, '\n', Comment.objects.get(pk=id_best).text)
+Дата комментария:  2022-11-16 22:21:36.530351+00:00 , Пользователь: Max , Рейтинг: 6
+ Очень красивые горы, Лайк!
