@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 class Author(models.Model):
@@ -16,6 +17,9 @@ class Author(models.Model):
 
 class Category(models.Model):
     category = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.category
 
 
 type_of_posts_choice = [
@@ -54,6 +58,9 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.header}\n{self.text}\nАвтор: {self.user}"
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):

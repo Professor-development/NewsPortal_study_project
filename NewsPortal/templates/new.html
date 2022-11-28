@@ -11,6 +11,11 @@
         <h1>{{post.header | censor}}</h1>
         <h5>Дата публикации: {{post.time_of_publication|date:'d M Y'}}</h5>
         <hr>
-        {{post.text | censor}}
+        {{post.text | censor}}<br>
+        {{ category.category }}
+        <hr>
+        <a href="{{ post.id }}/update">Редактировать публикацию</a>
+        <br>
+        <a href="{{ post.id }}/delete">Удалить публикацию</a>
     {% endif %}
 {% endblock content %}
